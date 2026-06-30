@@ -11,6 +11,9 @@ import '../widgets/sudoku_board.dart';
 import '../widgets/number_pad.dart';
 import '../widgets/game_controls.dart';
 import '../widgets/confetti_overlay.dart';
+import '../services/settings_service.dart';
+
+enum HapticFeedbackType { light, medium, heavy, click }
 
 class GameScreen extends StatefulWidget {
   final int levelId;
@@ -46,10 +49,30 @@ class _GameScreenState extends State<GameScreen> {
   // Undo
   final List<_Move> _undoStack = [];
 
+  final SettingsService _settings = SettingsService();
+
   @override
   void initState() {
     super.initState();
     _initGame();
+  }
+
+  void _haptic(HapticFeedbackType type) {
+    if (!_settings.hapticEnabled) return;
+    switch (type) {
+      case HapticFeedbackType.light:
+        _haptic(HapticFeedbackType.light);
+        break;
+      case HapticFeedbackType.medium:
+        _haptic(HapticFeedbackType.medium);
+        break;
+      case HapticFeedbackType.heavy:
+        _haptic(HapticFeedbackType.heavy);
+        break;
+      case HapticFeedbackType.click:
+        _haptic(HapticFeedbackType.click);
+        break;
+    }
   }
 
   @override
@@ -86,6 +109,7 @@ class _GameScreenState extends State<GameScreen> {
 
   void _onCellTap(int row, int col) {
     if (_isComplete || _isPaused) return;
+    _haptic(HapticFeedbackType.light);
     setState(() {
       _selectedRow = row;
       _selectedCol = col;
@@ -98,6 +122,7 @@ class _GameScreenState extends State<GameScreen> {
     if (_isGiven(_selectedRow, _selectedCol)) return;
 
     if (_notesMode) {
+      _haptic(HapticFeedbackType.light);
       setState(() {
         if (_notes[_selectedRow][_selectedCol].contains(number)) {
           _notes[_selectedRow][_selectedCol].remove(number);
@@ -136,6 +161,7 @@ class _GameScreenState extends State<GameScreen> {
     if (_isComplete || _isPaused) return;
     if (_isGiven(_selectedRow, _selectedCol)) return;
 
+    _haptic(HapticFeedbackType.light);
     _undoStack.add(_Move(
       row: _selectedRow,
       col: _selectedCol,
@@ -151,6 +177,7 @@ class _GameScreenState extends State<GameScreen> {
 
   void _onUndo() {
     if (_undoStack.isEmpty) return;
+    _haptic(HapticFeedbackType.light);
     final move = _undoStack.removeLast();
     setState(() {
       _board[move.row][move.col] = move.prevValue;
@@ -161,6 +188,7 @@ class _GameScreenState extends State<GameScreen> {
   void _onHint() {
     if (_isComplete || _isPaused) return;
 
+    _haptic(HapticFeedbackType.medium);
     final hints = SudokuEngine.getHints(_board, _solution);
     if (hints.isEmpty) return;
 
@@ -209,9 +237,12 @@ class _GameScreenState extends State<GameScreen> {
     final allComplete = totalSolved >= AppConstants.totalLevels;
 
     if (allComplete) {
+      _haptic(HapticFeedbackType.heavy);
       setState(() {
         _showConfetti = true;
       });
+    } else {
+      _haptic(HapticFeedbackType.heavy);
     }
 
     if (!mounted) return;
@@ -461,7 +492,7 @@ class _GameScreenState extends State<GameScreen> {
                           const SizedBox(width: 8),
                           NeumoIconButton(
                             icon: Icons.pause_rounded,
-                            onTap: () => setState(() => _isPaused = !_isPaused),
+                            onTap: () { _haptic(HapticFeedbackType.click); setState(() => _isPaused = !_isPaused); },
                             size: 42,
                           ),
                         ],
@@ -492,7 +523,7 @@ class _GameScreenState extends State<GameScreen> {
                       onHint: _onHint,
                       onUndo: _onUndo,
                       onErase: _onErase,
-                      onNotesToggle: () => setState(() => _notesMode = !_notesMode),
+                      onNotesToggle: () { _haptic(HapticFeedbackType.click); setState(() => _notesMode = !_notesMode); },
                     ),
 
                     // Number pad

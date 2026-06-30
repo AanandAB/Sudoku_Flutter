@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/neumorphic.dart';
@@ -65,7 +66,7 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
                     children: [
                       NeumoIconButton(
                         icon: Icons.arrow_back_rounded,
-                        onTap: () => context.go('/'),
+                        onTap: () { HapticFeedback.selectionClick(); context.go('/'); },
                       ),
                       const SizedBox(width: 16),
                       Text(
@@ -166,6 +167,7 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
         return GestureDetector(
           onTap: () {
             if (isUnlocked) {
+              HapticFeedback.lightImpact();
               context.go('/game/$levelId');
             }
           },

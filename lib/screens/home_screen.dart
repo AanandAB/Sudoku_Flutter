@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/neumorphic.dart';
@@ -73,7 +74,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 children: [
-                  const SizedBox(height: 24),
+                  // ── Settings gear ──
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: NeumoIconButton(
+                      icon: Icons.settings_rounded,
+                      size: 40,
+                      onTap: () { HapticFeedback.selectionClick(); context.go('/settings'); },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
 
                   // ── Logo ──
                   AnimatedBuilder(
@@ -227,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     radius: BorderRadius.circular(20),
                     color: AppColors.primary,
                     pressedColor: AppColors.primaryDark,
-                    onTap: () => context.go('/levels'),
+                    onTap: () { HapticFeedback.selectionClick(); context.go('/levels'); },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -251,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     NeumoButton(
                       width: double.infinity,
                       height: 56,
-                      onTap: () => context.go('/continue'),
+                      onTap: () { HapticFeedback.selectionClick(); context.go('/continue'); },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

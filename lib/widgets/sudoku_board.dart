@@ -26,87 +26,89 @@ class SudokuBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final boardSize = size.width - 32; // 16px padding each side
+    final boardSize = size.width - 32;
     final cellSize = boardSize / 9;
 
     return Container(
       width: boardSize,
       height: boardSize,
       decoration: Neumo.boxConvex(radius: BorderRadius.circular(20)),
-      padding: const EdgeInsets.all(4),
-      child: Column(
-        children: List.generate(3, (br) {
-          return Expanded(
-            child: Row(
-              children: List.generate(3, (bc) {
-                return Expanded(
-                  child: Container(
-                    margin: EdgeInsets.only(
-                      top: br > 0 ? 1.5 : 0,
-                      bottom: br < 2 ? 1.5 : 0,
-                      left: bc > 0 ? 1.5 : 0,
-                      right: bc < 2 ? 1.5 : 0,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceDark.withAlpha(76),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: GridView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      padding: EdgeInsets.zero,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                      ),
-                      itemCount: 9,
-                      itemBuilder: (context, innerIdx) {
-                        final r = br * 3 + innerIdx ~/ 3;
-                        final c = bc * 3 + innerIdx % 3;
-                        final idx = r * 9 + c;
-                        final isSelected = r == selectedRow && c == selectedCol;
-                        final value = board[r][c];
-                        final isGivenCell = puzzle[r][c] != 0;
+      padding: const EdgeInsets.all(1),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(19),
+        child: GridView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.zero,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 9,
+          ),
+          itemCount: 81,
+          itemBuilder: (context, index) {
+            final row = index ~/ 9;
+            final col = index % 9;
+            final idx = row * 9 + col;
+            final isSelected = row == selectedRow && col == selectedCol;
+            final value = board[row][col];
+            final isGivenCell = puzzle[row][col] != 0;
 
-                        return GestureDetector(
-                          onTap: () => onCellTap(r, c),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: cellColors[idx] ?? Colors.transparent,
-                              borderRadius: isSelected
-                                  ? BorderRadius.circular(8)
-                                  : null,
-                              border: isSelected
-                                  ? Border.all(color: AppColors.primary, width: 2)
-                                  : Border.all(
-                                      color: AppColors.textHint.withAlpha(38),
-                                      width: 0.5,
-                                    ),
-                            ),
-                            child: Center(
-                              child: value != 0
-                                  ? Text(
-                                      '$value',
-                                      style: TextStyle(
-                                        fontSize: cellSize * 0.35,
-                                        fontWeight: isGivenCell
-                                            ? FontWeight.w700
-                                            : FontWeight.w500,
-                                        color: isGivenCell
-                                            ? AppColors.cellGiven
-                                            : AppColors.cellUser,
-                                      ),
-                                    )
-                                  : _buildNotes(r, c, cellSize),
-                            ),
-                          ),
-                        );
-                      },
+            // ── Border logic: thick for 3x3 box edges, thin for cell dividers ──
+            final isTopEdge = row % 3 == 0;
+            final isLeftEdge = col % 3 == 0;
+            final isBottomEdge = row == 8 || row % 3 == 2;
+            final isRightEdge = col == 8 || col % 3 == 2;
+            final isOuterTop = row == 0;
+            final isOuterLeft = col == 0;
+            final isOuterBottom = row == 8;
+            final isOuterRight = col == 8;
+
+            const boxBorderColor = Color(0xFF5B6ABF);    // primary indigo - thick
+            const cellBorderColor = Color(0xFFC5CBE8);    // lighter - thin
+
+            return GestureDetector(
+              onTap: () => onCellTap(row, col),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: cellColors[idx] ?? Colors.transparent,
+                  borderRadius: isSelected ? BorderRadius.circular(6) : null,
+                  border: Border(
+                    top: BorderSide(
+                      color: isOuterTop || isTopEdge ? boxBorderColor : cellBorderColor,
+                      width: isOuterTop ? 2.5 : (isTopEdge ? 2.0 : 0.6),
+                    ),
+                    left: BorderSide(
+                      color: isOuterLeft || isLeftEdge ? boxBorderColor : cellBorderColor,
+                      width: isOuterLeft ? 2.5 : (isLeftEdge ? 2.0 : 0.6),
+                    ),
+                    bottom: BorderSide(
+                      color: isOuterBottom || isBottomEdge ? boxBorderColor : cellBorderColor,
+                      width: isOuterBottom ? 2.5 : (isBottomEdge ? 2.0 : 0.6),
+                    ),
+                    right: BorderSide(
+                      color: isOuterRight || isRightEdge ? boxBorderColor : cellBorderColor,
+                      width: isOuterRight ? 2.5 : (isRightEdge ? 2.0 : 0.6),
                     ),
                   ),
-                );
-              }),
-            ),
-          );
-        }),
+                ),
+                child: Center(
+                  child: value != 0
+                      ? Text(
+                          '$value',
+                          style: TextStyle(
+                            fontSize: cellSize * 0.38,
+                            fontWeight: isGivenCell
+                                ? FontWeight.w700
+                                : FontWeight.w600,
+                            color: isGivenCell
+                                ? AppColors.cellGiven
+                                : AppColors.cellUser,
+                          ),
+                        )
+                      : _buildNotes(row, col, cellSize),
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

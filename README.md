@@ -8,7 +8,15 @@ Built from scratch — no third-party Sudoku libraries. The engine, UI, and leve
 
 ## Screenshots
 
-*(Screenshots will go here after first run)*
+<p align="center">
+  <img src="screenshots/home.jpg" width="30%" alt="Home Screen" />
+  <img src="screenshots/gameplay.jpg" width="30%" alt="Gameplay" />
+  <img src="screenshots/levels.jpg" width="30%" alt="Level Select" />
+</p>
+
+| Home | Gameplay | Levels |
+|:---:|:---:|:---:|
+| Neumorphic design with logo, stats dashboard, progress bar, difficulty breakdown | 9×9 board with thick 3×3 box borders, number pad, game controls, timer | 5-column grid with stars, unlock status, difficulty tabs |
 
 ---
 
