@@ -1,6 +1,7 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/neumorphic.dart';
@@ -61,16 +62,16 @@ class _GameScreenState extends State<GameScreen> {
     if (!_settings.hapticEnabled) return;
     switch (type) {
       case HapticFeedbackType.light:
-        _haptic(HapticFeedbackType.light);
+        HapticFeedback.lightImpact();
         break;
       case HapticFeedbackType.medium:
-        _haptic(HapticFeedbackType.medium);
+        HapticFeedback.mediumImpact();
         break;
       case HapticFeedbackType.heavy:
-        _haptic(HapticFeedbackType.heavy);
+        HapticFeedback.heavyImpact();
         break;
       case HapticFeedbackType.click:
-        _haptic(HapticFeedbackType.click);
+        HapticFeedback.selectionClick();
         break;
     }
   }
